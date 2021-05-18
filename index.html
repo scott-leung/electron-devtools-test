@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World!</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <style type="text/css">
+      * {
+        margin: 0;
+      }
+      #browser {
+        height: 100%;
+      }
+      #devtools {
+        height: 50%;
+      }
+    </style>
+  </head>
+  <body style="background: white">
+    <h1>Hello World!</h1>
+    <p>
+      We are using Node.js <span id="node-version"></span>, Chromium
+      <span id="chrome-version"></span>, and Electron <span id="electron-version"></span>.
+    </p>
+    <webview
+      id="browser"
+      nodeintegration
+      nodeintegrationinsubframes="true"
+      src="./child.html"
+      webpreferences="contextIsolation=no"
+    ></webview>
+    <webview
+      id="devtools"
+      nodeintegration
+      nodeintegrationinsubframes="true"
+      src="about:blank"
+      webpreferences="contextIsolation=no"
+    ></webview>
+    <script>
+      const axios = require('axios');
+      const { ipcRenderer } = require('electron');
+      const emittedOnce = (element, eventName) =>
+        new Promise((resolve) => {
+          element.addEventListener(eventName, (event) => resolve(event), { once: true });
+        });
+      const browserView = document.getElementById('browser');
+      const devtoolsView = document.getElementById('devtools');
+      const browserReady = emittedOnce(browserView, 'dom-ready');
+      const devtoolsReady = emittedOnce(devtoolsView, 'dom-ready');
+      Promise.all([browserReady, devtoolsReady]).then(() => {
+        const targetId = browserView.getWebContentsId();
+        const devtoolsId = devtoolsView.getWebContentsId();
+        ipcRenderer.send('open-devtools', targetId, devtoolsId);
+        // browserView.openDevTools();
+        // browserView.setDevToolsWebContents(devtoolsView);
+        // browser.openDevTools();
+        // axios(`http://127.0.0.1:8888/json`).then((res) => {
+        //   if (res.data && res.data.length > 0) {
+        //     const list = res.data;
+        //     let target;
+        //     for (let i = 0; i < list.length; i++) {
+        //       const item = list[i];
+        //       if (item.url.indexOf('github.com') >= 0) {
+        //         target = item;
+        //         break;
+        //       }
+        //     }
+        //     const src = `http://127.0.0.1:8888${target.devtoolsFrontendUrl}`;
+        //     console.log(`devtoolsView src: ${src}`);
+        //     devtoolsView.setAttribute('src', src);
+        //   }
+        // });
+      });
+    </script>
+  </body>
+</html>

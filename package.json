@@ -1,0 +1,20 @@
+{
+  "name": "electron-test",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "electron",
+    "test"
+  ],
+  "author": "ScottLeung",
+  "license": "ISC",
+  "devDependencies": {
+    "axios": "^0.21.1",
+    "electron": "^12.0.8"
+  }
+}
